@@ -73,7 +73,7 @@ func cleanpgMain() int {
 	flag.Usage = usage
 	flag.Parse()
 
-	// If help is asked, print it and exit
+	// Print help and exit
 	if *helpPtr {
 		usage()
 		return 0
