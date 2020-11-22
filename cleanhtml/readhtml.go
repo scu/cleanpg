@@ -2,8 +2,6 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-// Package cleanhtml provides read -> parse -> filter -> render
-// capability to the cleanpg utility.
 package cleanhtml
 
 import (
@@ -14,7 +12,8 @@ import (
 )
 
 // ReadHTML reads a web page and returns a string
-// containing the unfiltered contents and an error
+// containing the unfiltered document, which is then
+// passed to cleanhtml.CleanHTML to render the result.
 func ReadHTML(url string) ([]byte, error) {
 
 	resp, err := http.Get(url)

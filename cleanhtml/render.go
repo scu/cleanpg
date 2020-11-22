@@ -2,8 +2,6 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-// Package cleanhtml provides read -> parse -> filter -> render
-// capability to the cleanpg utility.
 package cleanhtml
 
 import (
@@ -22,6 +20,7 @@ type writer interface {
 	WriteString(string) (int, error)
 }
 
+// escape writes escaped characters correctly
 func escape(w writer, s string) error {
 	const escapedChars = "&'<>\"\r"
 
@@ -35,19 +34,17 @@ func escape(w writer, s string) error {
 		case '&':
 			esc = "&amp;"
 		case '\'':
-			// "&#39;" is shorter than "&apos;" and apos was not in HTML until HTML5.
 			esc = "&#39;"
 		case '<':
 			esc = "&lt;"
 		case '>':
 			esc = "&gt;"
 		case '"':
-			// "&#34;" is shorter than "&quot;".
 			esc = "&#34;"
 		case '\r':
 			esc = "&#13;"
 		default:
-			panic("unrecognized escape character")
+			return errors.New("unrecognized escape character")
 		}
 		s = s[i+1:]
 		if _, err := w.WriteString(esc); err != nil {
@@ -59,7 +56,7 @@ func escape(w writer, s string) error {
 	return err
 }
 
-// isTextWhitespace returns true if text block runes
+// isTextWhitespace returns true if all runes in text
 // are entirely whitespace
 func isTextWhitespace(text string) bool {
 	for _, v := range text {
@@ -146,6 +143,8 @@ func renderAttributes(w writer, n *html.Node) error {
 			if err := w.WriteByte(' '); err != nil {
 				return err
 			}
+			// Include namespaces (probably could skip this
+			// but future versions might take advantage...)
 			if a.Namespace != "" {
 				if _, err := w.WriteString(a.Namespace); err != nil {
 					return err
@@ -154,6 +153,7 @@ func renderAttributes(w writer, n *html.Node) error {
 					return err
 				}
 			}
+			// Render element key="value" attributes
 			keyVal := fmt.Sprintf("%s=\"%s\"", a.Key, a.Val)
 			if _, err := w.WriteString(keyVal); err != nil {
 				return err
@@ -220,6 +220,7 @@ func render(w writer, n *html.Node) error {
 		}
 	}
 
+	// Close out the tag
 	if renderElement {
 		if err := renderCloseTag(w, n); err != nil {
 			return err

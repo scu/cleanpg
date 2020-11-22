@@ -2,8 +2,6 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-// Package cleanhtml provides read -> parse -> filter -> render
-// capability to the cleanpg utility.
 package cleanhtml
 
 import (
@@ -14,13 +12,13 @@ import (
 	"golang.org/x/net/html"
 )
 
-var renderPostH1Elements bool = false
+var renderCanonicalMode bool = false
 
 // SetPostH1Render sets flag indicating whether
 // the renderer will process BODY elements until the
 // first H1 tag is reached
 func SetPostH1Render(flag bool) {
-	renderPostH1Elements = flag
+	renderCanonicalMode = flag
 }
 
 var renderStyle bool = true
@@ -41,7 +39,10 @@ func SetLinksRender(flag bool) {
 	renderLinks = flag
 }
 
-// CleanHTML returns cleaned data
+// CleanHTML provides a rendered HTML document.
+// It accepts document data (normally through cleanhtml.ReadHTML),
+// parses and renders the data through a set of filters to produce
+// readable HTML output, which is returned as a string.
 func CleanHTML(data []byte) (string, error) {
 	// Parse the document
 	docNodes, err := html.Parse(bytes.NewReader(data))

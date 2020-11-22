@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // Package logger provides logging capability for an application or service.
+// TODO: make this its own go module outside of cleanpg
 package logger
 
 import (
@@ -64,7 +65,7 @@ func LogToStderr(flag bool) {
 func SetLogFile(fileName string) {
 	closeLogFile()
 	logFileName = fileName
-	initLogFile()
+	initLoggers()
 }
 
 // Truncate is used to truncate the log file to zero length
@@ -97,8 +98,8 @@ func Write(messageType MessageType, format string, a ...interface{}) {
 
 }
 
-// initLogFile initializes a log file and loggers for each level
-func initLogFile() {
+// initLoggers initializes a log file and loggers for each level
+func initLoggers() {
 
 	var err error
 	logFileFD, err = createLogFile(logFileFD)
@@ -146,5 +147,5 @@ func closeLogFile() {
 }
 
 func init() {
-	initLogFile()
+	initLoggers()
 }

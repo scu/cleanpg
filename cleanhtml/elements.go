@@ -2,8 +2,6 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-// Package cleanhtml provides read -> parse -> filter -> render
-// capability to the cleanpg utility.
 package cleanhtml
 
 import "strings"
@@ -23,6 +21,7 @@ func isElementRenderable(node string) bool {
 	lcaseTag := strings.ToLower(node)
 	var doRender bool = false
 
+	// Is it in the map
 	if _, ok := renderableHTML[lcaseTag]; ok {
 		doRender = true
 	}
@@ -32,10 +31,10 @@ func isElementRenderable(node string) bool {
 		return false
 	}
 
-	// Special processing directives for -p flag
+	// Special processing directives for "canonical mode"
 	// which indicates only body & div elements are to be
 	// rendered until the first h1 tag is encountered
-	if renderPostH1Elements && doRender {
+	if renderCanonicalMode && doRender {
 
 		if lcaseTag == "body" {
 			encounteredBodyElement = true
@@ -182,6 +181,7 @@ var renderableHTML = map[string]nodeElements{
 	"br": {},
 
 	// Image and multimedia
+	// TODO: option to catalog images
 	//"img": {"src"},
 
 	// Table content
